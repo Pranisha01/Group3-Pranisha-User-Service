@@ -25,37 +25,36 @@ public class UserController {
 	@Autowired
 	UserService userService;
 
-	// save user in database(db)
 	@PostMapping
 	public ResponseEntity<UserDto> saveDepartment(@RequestBody UserDto userDto) {
 		return new ResponseEntity<>(userService.saveUser(userDto), HttpStatus.OK);
 	}
 
-	// Retrieve user by id from db
+
 	@GetMapping("/id/{userId}")
 	public ResponseEntity<UserDto> getUserById(@PathVariable("userId") long id) {
 		return new ResponseEntity<>(userService.findUserById(id), HttpStatus.OK);
 	}
 
-	// Retrieve user by username from db
+
 	@GetMapping("/username/{username}")
 	public ResponseEntity<UserDto> getUserByUsername(@PathVariable("username") String name) {
 		return new ResponseEntity<>(userService.findUserByUsername(name), HttpStatus.OK);
 	}
 
-	// Retrieve user by email from db
+
 	@GetMapping("/email/{email}")
 	public ResponseEntity<UserDto> getUserByEmail(@PathVariable("email") String email) {
 		return new ResponseEntity<>(userService.findUserByEmail(email), HttpStatus.OK);
 	}
 
-	// get all users as a list
+
 	@GetMapping("/all")
 	public ResponseEntity<List<User>> getAllUsers() {
 		return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
 	}
 	
-	//update user in db by id
+	
 	@PutMapping("/update/{userid}")
 	public ResponseEntity<UserDto> updateUser( @PathVariable("userid") Long userid ,@RequestBody UserDto userDto ) {
 		
@@ -67,7 +66,7 @@ public class UserController {
         }
 	}
 	
-	//delete user by id
+
 	 @DeleteMapping("/delete/{userId}")
 	    public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
 	        boolean deleted = userService.deleteUser(userId);

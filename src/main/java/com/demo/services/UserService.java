@@ -19,7 +19,6 @@ public class UserService {
 	@Autowired
 	ModelMapper mapper;
 	
-	//method for save user in db
 	public UserDto saveUser(UserDto dto){
 		User user = mapToUser(dto);
 		User newUser = userRepo.save(user);
@@ -27,33 +26,28 @@ public class UserService {
 		return responseDto;
 	}
 	
-	//method to find user by id
 	public UserDto findUserById(long id) {
 		User user = userRepo.findById(id).orElse(null);
 		UserDto userDto = mapToDto(user);
 		return userDto;
 	}
 	
-	//method to find user by username
 	public UserDto findUserByUsername(String name) {
 		User user = userRepo.findByUsername(name);
 		UserDto userDto = mapToDto(user);
 		return userDto;
 	}
 	
-	//method to find user by email
 	public UserDto findUserByEmail(String email) {
 		User user = userRepo.findByEmail(email);
 		UserDto userDto = mapToDto(user);
 		return userDto;
 	}
 	
-	//method to get all users as a list
 	public List<User> getAllUsers(){
 		return userRepo.findAll();
 	}
 	
-	//method to update user
 	public UserDto updateUser(UserDto dto ,Long id) {
 		User existingUser = userRepo.findById(id).orElse(null);
 		User newUser = mapToUser(dto);
@@ -72,7 +66,7 @@ public class UserService {
 	
 	}
 	
-	//method to delete user from db
+
 	public boolean deleteUser(Long userId) {
 	        if (userRepo.existsById(userId)) {
 	            userRepo.deleteById(userId);
@@ -83,8 +77,7 @@ public class UserService {
 	
 	}
 	
-	
-	//mapping methods to map user and userDto
+
 	public UserDto mapToDto(User User) {
 		UserDto dto = mapper.map(User, UserDto.class);
 		return dto;
