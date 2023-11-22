@@ -28,6 +28,11 @@ public class UserController {
 		return userService.saveUser(userDto);
 	}
 
+	@GetMapping("/authenticate")
+	public ResponseEntity<String> authenticateUser(@RequestBody UserDto userDto) {
+		return userService.authenticate(userDto);
+	}
+	
 	@GetMapping("/id/{userId}")
 	public ResponseEntity<UserDto> getUserById(@PathVariable("userId") long id) {
 		return userService.findUserById(id);

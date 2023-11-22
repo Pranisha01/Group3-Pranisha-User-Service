@@ -1,7 +1,5 @@
 package com.demo.services;
 
-
-import java.util.ArrayList;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -12,158 +10,111 @@ import org.springframework.stereotype.Service;
 
 import com.demo.entities.User;
 import com.demo.entities.UserDto;
+import com.demo.exceptions.IncorrectCredentialException;
+import com.demo.exceptions.UserNotFoundException;
 import com.demo.repositories.UserRepository;
 
 @Service
 public class UserService {
-	
+
 	@Autowired
 	UserRepository userRepo;
-	
+
+
 	@Autowired
 	ModelMapper mapper;
 
-	public ResponseEntity<UserDto> saveUser(UserDto dto){
-		try {
-			User user = mapToUser(dto);
+	public ResponseEntity<UserDto> saveUser(UserDto dto) {
 
-			User newUser = userRepo.save(user);
-			newUser.setPassword("******"); 
-			UserDto responseDto = mapToDto(newUser); 
-			return new ResponseEntity<>(responseDto,HttpStatus.CREATED);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
+		User user = mapToUser(dto);
+		User newUser = userRepo.save(user);
+		UserDto responseDto = mapToDto(newUser);
+		return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
 	}
-	
+
+	public ResponseEntity<String> authenticate(UserDto dto) {
+		Long id = dto.getId();
+		User existingUser = userRepo.findById(dto.getId())
+				.orElseThrow(() -> new UserNotFoundException("User not found by this ID: " + id));
+
+		if (dto.getPassword().equals( existingUser.getPassword())
+				&& dto.getUsername().equals(existingUser.getUsername())) {
+			return new ResponseEntity<>("User Exist", HttpStatus.OK);
+		} else {
+			throw new IncorrectCredentialException("Enter correct details");
+		}
+
+	}
+
 
 	public ResponseEntity<UserDto> findUserById(long id) {
-		
-		try {
-			
-			User user = userRepo.findById(id).orElse(null);
-			if(user!=null) {
-				UserDto responseDto = mapToDto(user);
-				responseDto.setPassword("******");
-				return new ResponseEntity<>(responseDto,HttpStatus.OK);
-			}else {
-				return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
-			}
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	
-		return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
+
+		User user = userRepo.findById(id).orElseThrow(() -> new UserNotFoundException("User not found by this ID: " + id));
+		UserDto responseDto = mapToDto(user);
+		return new ResponseEntity<>(responseDto, HttpStatus.OK);
+
 	}
+
 
 	public ResponseEntity<UserDto> findUserByUsername(String name) {
-		try {
-			User user = userRepo.findByUsername(name).orElse(null);
-			if(user!=null) {
-				UserDto responseDto = mapToDto(user);
-				responseDto.setPassword("******");
-				return new ResponseEntity<>(responseDto,HttpStatus.OK);
-			}else {
-				return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
-			}	
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	
-		return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
+
+		User user = userRepo.findByUsername(name)
+				.orElseThrow(() -> new UserNotFoundException("User not found with this name: " + name));
+		UserDto responseDto = mapToDto(user);
+		return new ResponseEntity<>(responseDto, HttpStatus.OK);
+
 	}
-	
+
 
 	public ResponseEntity<UserDto> findUserByEmail(String email) {
-		try {
-			User user = userRepo.findByEmail(email).orElse(null);
-			if(user!=null) {
-				UserDto responseDto = mapToDto(user);
-				responseDto.setPassword("******");  
-				return new ResponseEntity<>(responseDto,HttpStatus.OK);
-			}else {
-				return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);	
-	}
-	
 
-	public ResponseEntity<List<UserDto>>  getAllUsers(){
-		try {
-			List<User> userList = userRepo.findAll();
-			List<UserDto> dtoList = new ArrayList<>();
-			if(userList!=null) {
-				for(User user : userList) {
-					UserDto userDto = mapToDto(user);
-					userDto.setPassword("******");
-					dtoList.add(userDto);
-				}
-				return new ResponseEntity<>(dtoList,HttpStatus.OK);
-			}else {
-				return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);
-			}
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return new ResponseEntity<>(null,HttpStatus.BAD_REQUEST);
-	}
-	
-
-	public ResponseEntity<UserDto> updateUser(UserDto dto ,Long id) {
-		
-		try {
-			User existingUser = userRepo.findById(id).orElse(null);
-			User newUser = mapToUser(dto);
-			if(existingUser!=null) {
-				existingUser.setEmail(newUser.getEmail());
-				existingUser.setUsername(newUser.getUsername());
-				existingUser.setPassword(newUser.getPassword());
-				
-				User updatedUser =  userRepo.save(existingUser);
-				UserDto responseDto = mapToDto(updatedUser); 
-				responseDto.setPassword("******");
-				return new ResponseEntity<>(responseDto,HttpStatus.CREATED);
-			}
-			else {
-				return new ResponseEntity<>(null,HttpStatus.NOT_FOUND);  //write appropriate exception when user does not exist
-			}
-		} catch (Exception e) {
-			
-		}
-		return new ResponseEntity<>(dto,HttpStatus.BAD_REQUEST);
-		
+		User user = userRepo.findByEmail(email)
+				.orElseThrow(() -> new UserNotFoundException("User not found with this email: " + email));
+		UserDto responseDto = mapToDto(user);
+		return new ResponseEntity<>(responseDto, HttpStatus.OK);
 
 	}
-	
+
+	public ResponseEntity<List<UserDto>> getAllUsers() {
+
+		List<User> userList = userRepo.findAll();
+		List<UserDto> dtoList = userList.stream().map(user -> mapToDto(user)).toList();
+		return new ResponseEntity<>(dtoList, HttpStatus.OK);
+
+	}
+
+
+	public ResponseEntity<UserDto> updateUser(UserDto dto, Long id) {
+
+		User existingUser = userRepo.findById(id)
+				.orElseThrow(() -> new UserNotFoundException("User not found by this ID: " + id));
+
+		existingUser.setEmail(dto.getEmail());
+		existingUser.setUsername(dto.getUsername());
+		
+		
+		User updatedUser = userRepo.save(existingUser);
+		UserDto responseDto = mapToDto(updatedUser);
+		return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+
+	}
+
+
 	public ResponseEntity<String> deleteUser(Long userId) {
-		try {
-			if (userRepo.existsById(userId)) {
-	            userRepo.deleteById(userId);
-	            return new ResponseEntity<>("user deleted succefully!",HttpStatus.OK);
-	        } else {
-	        	return new ResponseEntity<>("user with given id not found",HttpStatus.NOT_FOUND);
-	        }
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		return new ResponseEntity<>("bad request",HttpStatus.BAD_REQUEST);
-	
+		User existingUser = userRepo.findById(userId)
+				.orElseThrow(() -> new UserNotFoundException("User not found by this ID: " + userId));
+		userRepo.deleteById(userId);
+		return new ResponseEntity<>("User deleted Successfully", HttpStatus.OK);
+
 	}
-	
+
 
 	public UserDto mapToDto(User User) {
 		UserDto dto = mapper.map(User, UserDto.class);
+		dto.setPassword("*****");     
 		return dto;
 	}
+
 	public User mapToUser(UserDto dto) {
 		User user = mapper.map(dto, User.class);
 		return user;
