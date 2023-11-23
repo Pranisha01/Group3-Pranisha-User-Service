@@ -8,8 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.demo.dto.UserDto;
 import com.demo.entities.User;
-import com.demo.entities.UserDto;
 import com.demo.exceptions.IncorrectCredentialException;
 import com.demo.exceptions.UserNotFoundException;
 import com.demo.repositories.UserRepository;

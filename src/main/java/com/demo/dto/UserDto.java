@@ -1,4 +1,6 @@
-package com.demo.entities;
+package com.demo.dto;
+
+import com.demo.entities.Role;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
