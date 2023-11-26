@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.demo.dto.UserDto;
+import com.demo.exceptions.IncorrectCredentialException;
+import com.demo.exceptions.UserNotFoundException;
 import com.demo.services.UserService;
 
 @RestController
@@ -29,22 +31,22 @@ public class UserController {
 	}
 
 	@GetMapping("/authenticate")
-	public ResponseEntity<String> authenticateUser(@RequestBody UserDto userDto) {
+	public ResponseEntity<String> authenticateUser(@RequestBody UserDto userDto) throws Exception, IncorrectCredentialException {
 		return userService.authenticate(userDto);
 	}
 	
 	@GetMapping("/id/{userId}")
-	public ResponseEntity<UserDto> getUserById(@PathVariable("userId") long id) {
+	public ResponseEntity<UserDto> getUserById(@PathVariable("userId") long id) throws UserNotFoundException {
 		return userService.findUserById(id);
 	}
 
 	@GetMapping("/username/{username}")
-	public ResponseEntity<UserDto> getUserByUsername(@PathVariable("username") String name) {
+	public ResponseEntity<UserDto> getUserByUsername(@PathVariable("username") String name) throws UserNotFoundException {
 		return userService.findUserByUsername(name);
 	}
 
 	@GetMapping("/email/{email}")
-	public ResponseEntity<UserDto> getUserByEmail(@PathVariable("email") String email) {
+	public ResponseEntity<UserDto> getUserByEmail(@PathVariable("email") String email) throws UserNotFoundException {
 		return userService.findUserByEmail(email);
 	}
 
@@ -54,12 +56,12 @@ public class UserController {
 	}
 
 	@PutMapping("/update/{userid}")
-	public ResponseEntity<UserDto> updateUser( @PathVariable("userid") Long userid ,@RequestBody UserDto userDto ) {
+	public ResponseEntity<UserDto> updateUser( @PathVariable("userid") Long userid ,@RequestBody UserDto userDto ) throws UserNotFoundException {
             return userService.updateUser(userDto, userid);        
 	}
 
 	 @DeleteMapping("/delete/{userId}")
-	    public ResponseEntity<String> deleteUser(@PathVariable Long userId) {
+	    public ResponseEntity<String> deleteUser(@PathVariable Long userId) throws UserNotFoundException {
 	        return userService.deleteUser(userId);
 	    }
 }

@@ -32,7 +32,7 @@ public class UserService {
 		return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
 	}
 
-	public ResponseEntity<String> authenticate(UserDto dto) {
+	public ResponseEntity<String> authenticate(UserDto dto) throws UserNotFoundException, IncorrectCredentialException {
 		Long id = dto.getId();
 		User existingUser = userRepo.findById(dto.getId())
 				.orElseThrow(() -> new UserNotFoundException("User not found by this ID: " + id));
@@ -47,7 +47,7 @@ public class UserService {
 	}
 
 
-	public ResponseEntity<UserDto> findUserById(long id) {
+	public ResponseEntity<UserDto> findUserById(long id) throws UserNotFoundException {
 
 		User user = userRepo.findById(id).orElseThrow(() -> new UserNotFoundException("User not found by this ID: " + id));
 		UserDto responseDto = mapToDto(user);
@@ -56,7 +56,7 @@ public class UserService {
 	}
 
 
-	public ResponseEntity<UserDto> findUserByUsername(String name) {
+	public ResponseEntity<UserDto> findUserByUsername(String name) throws UserNotFoundException {
 
 		User user = userRepo.findByUsername(name)
 				.orElseThrow(() -> new UserNotFoundException("User not found with this name: " + name));
@@ -66,7 +66,7 @@ public class UserService {
 	}
 
 
-	public ResponseEntity<UserDto> findUserByEmail(String email) {
+	public ResponseEntity<UserDto> findUserByEmail(String email) throws UserNotFoundException {
 
 		User user = userRepo.findByEmail(email)
 				.orElseThrow(() -> new UserNotFoundException("User not found with this email: " + email));
@@ -84,7 +84,7 @@ public class UserService {
 	}
 
 
-	public ResponseEntity<UserDto> updateUser(UserDto dto, Long id) {
+	public ResponseEntity<UserDto> updateUser(UserDto dto, Long id) throws UserNotFoundException {
 
 		User existingUser = userRepo.findById(id)
 				.orElseThrow(() -> new UserNotFoundException("User not found by this ID: " + id));
@@ -100,7 +100,7 @@ public class UserService {
 	}
 
 
-	public ResponseEntity<String> deleteUser(Long userId) {
+	public ResponseEntity<String> deleteUser(Long userId) throws UserNotFoundException {
 		User existingUser = userRepo.findById(userId)
 				.orElseThrow(() -> new UserNotFoundException("User not found by this ID: " + userId));
 		userRepo.deleteById(userId);
