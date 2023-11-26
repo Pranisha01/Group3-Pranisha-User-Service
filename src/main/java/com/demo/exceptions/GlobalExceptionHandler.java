@@ -27,7 +27,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
 
-	//incorrect credentials exception handler
+	//Incorrect credentials exception handler
 	@ExceptionHandler(IncorrectCredentialException.class)
     public ResponseEntity<ErrorDetails> handleIncorrectCredentialException(IncorrectCredentialException exception,
                                                                         WebRequest webRequest){
