@@ -18,6 +18,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	
+	//user not found exception handler
 	@ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorDetails> handleUserNotFoundException(UserNotFoundException exception,
                                                                         WebRequest webRequest){
@@ -26,6 +27,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorDetails, HttpStatus.NOT_FOUND);
     }
 
+	//incorrect credentials exception handler
 	@ExceptionHandler(IncorrectCredentialException.class)
     public ResponseEntity<ErrorDetails> handleIncorrectCredentialException(IncorrectCredentialException exception,
                                                                         WebRequest webRequest){
